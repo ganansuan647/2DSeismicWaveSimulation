@@ -37,13 +37,13 @@ if __name__ == "__main__":
     simulator = AcousticWave2D(
         model=model.wedge,  # 使用楔形模型
         materials=materials,
-        wavelet_type="ricker",
+        wavelet_type="berlage",
         dz=5.0,
         dx=5.0,
-        dt=0.0005,
+        dt=0.001,
         tmax=3.0,         # 时间短一些，快速演示
         fm=20.0,
-        pml_n=30,         # 30网格厚度的PML
+        pml_n=50,         # 50网格厚度的PML
         fd_order=8,
         time_order=2,
         source_position=source_position,

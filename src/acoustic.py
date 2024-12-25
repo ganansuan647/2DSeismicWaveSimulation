@@ -19,7 +19,7 @@ class AcousticWave2D:
         self,
         model: np.ndarray,          # 场地矩阵nz*nx
         materials: np.ndarray,      # 声波速度模型{0: {"v": 340.0, "rho": 1.225},1: {"v": 1500.0, "rho": 1000.0}}
-        wavelet_type: Literal["ricker", "gaussian", "other"] = "ricker",
+        wavelet_type: Literal["ricker", "berlage", "other"] = "ricker",
         dz: float = 5.0,
         dx: float = 5.0,
         dt: float = 0.0005,
@@ -36,7 +36,7 @@ class AcousticWave2D:
 
         参数：
         -------
-        wavelet_type : Literal["ricker", "gaussian", "other"]
+        wavelet_type : Literal["ricker", "berlage", "other"]
             震源波形类型，默认为 "ricker"。
         physical_nz : int
             不含 PML 的物理区域网格数（Z 方向）。

@@ -92,5 +92,5 @@ class ModelManager:
         plt.plot(top, "b-", lw=4, label="Top Layer")
         plt.plot(base, "r-", lw=4, label="Base Layer")
         plt.colorbar(label="Layer Value").ax.invert_yaxis()
-        plt.legend()
+        plt.legend(loc='lower right')
         plt.show()
