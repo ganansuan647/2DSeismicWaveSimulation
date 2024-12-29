@@ -128,8 +128,8 @@ class AcousticWave2D:
         
         # 为源构造空间分布（以源点为中心，高斯分布）
         # 高斯标准差设定，根据需要调整
-        sigma_src = 1.5 # 可以根据需要调整
-        src_grid_size = 3  # 源在3x3格点范围内分布
+        sigma_src = 5 # 可以根据需要调整
+        src_grid_size = 11  # 源在3x3格点范围内分布
         source_positions = []
         for iz in range(self.z0 - src_grid_size//2, self.z0 + src_grid_size//2 + 1):
             for ix in range(self.x0 - src_grid_size//2, self.x0 + src_grid_size//2 + 1):
@@ -212,7 +212,7 @@ class AcousticWave2D:
 
         # 保存检波器波形
         for i, (rz, rx) in enumerate(self.receiver_positions):
-            self.receiver_data[i, it] = self.p[rz, rx]
+            self.receiver_data[i, it] = self.p[int(rz/self.dz), int(rx/self.dx)]
 
     def run(self, save_snapshots=False, snapshot_interval=50) -> list[np.ndarray]:
         """
@@ -220,7 +220,7 @@ class AcousticWave2D:
         """
         nt = self.n_times
         snapshots = []
-
+        self.snapshot_interval = snapshot_interval
         for it in tqdm(range(nt), desc="Simulating"):
             self.step(it)
             # 保存快照
@@ -243,7 +243,7 @@ class AcousticWave2D:
         plt.legend()
         plt.show()
 
-    def visualize_snapshots(self, snapshots: list[np.ndarray]) -> None:
+    def visualize_snapshots(self, snapshots: list[np.ndarray],dt:int = 1, boundary: list[int] = None) -> None:
         """
         将波场快照序列保存为图像，并组合成 MP4 动画。
 
@@ -255,13 +255,18 @@ class AcousticWave2D:
         filenames = []
         # 将快照导出为图片并保存
         for i, snapshot in enumerate(snapshots):
+            if i % dt != 0:
+                continue
             plt.figure(figsize=(7, 6))
+            if boundary is not None:
+                # 四个边界
+                snapshot = snapshot[boundary[0]:boundary[1], boundary[2]:boundary[3]]
             plt.imshow(snapshot, cmap="RdBu", aspect="auto", origin="upper")
             plt.colorbar(label="Amplitude")
-            plt.title(f"T = {50 * (i + 1) * self.dt * 1000:.1f} ms")
+            plt.title(f"T = {self.snapshot_interval * i * self.dt * 1000:.1f} ms")
             plt.xlabel("X")
             plt.ylabel("Z")
-            filename = Path(f"./output/frame_{50*(i+1)*self.dt*1000:.1f}ms.png")
+            filename = Path(f"./output/frame_{self.snapshot_interval * i * self.dt*1000:.1f}ms.png")
             if not filename.exists():
                 filename.parent.mkdir(parents=True, exist_ok=True)
             plt.savefig(filename, dpi=100)
